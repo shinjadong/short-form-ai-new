@@ -74,6 +74,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single()
 
       if (error) {
+        // 사용자 프로필이 없는 경우 (Google OAuth 등으로 처음 로그인)
+        if (error.code === 'PGRST116') {
+          console.log('사용자 프로필이 없어서 새로 생성합니다.')
+          await createUserProfile(userId)
+          return
+        }
         console.error('프로필 조회 오류:', error)
         return
       }
@@ -81,6 +87,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUserProfile(data)
     } catch (error) {
       console.error('프로필 조회 중 오류:', error)
+    }
+  }
+
+  const createUserProfile = async (userId: string) => {
+    try {
+      const { data: userData } = await supabase.auth.getUser()
+      const email = userData.user?.email || ''
+      
+      const { data, error } = await supabase
+        .from('users')
+        .insert({
+          id: userId,
+          email: email,
+          subscription_tier: 'free',
+          usage_limit: 10,
+          usage_count: 0,
+        })
+        .select()
+        .single()
+
+      if (error) {
+        console.error('프로필 생성 오류:', error)
+        return
+      }
+
+      console.log('사용자 프로필이 생성되었습니다:', data)
+      setUserProfile(data)
+    } catch (error) {
+      console.error('프로필 생성 중 오류:', error)
     }
   }
 

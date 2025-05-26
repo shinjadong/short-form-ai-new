@@ -13,15 +13,77 @@ import {
   Zap,
   PlayCircle,
   FileText,
-  Mic
+  Mic,
+  AlertCircle
 } from 'lucide-react'
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
 
 export default function Dashboard() {
   const { user, userProfile } = useAuth()
-  const { usageCount, usageLimit, getUsagePercentage, subscriptionTier } = useUsageLimit()
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  let usageCount = 0
+  let usageLimit = 0
+  let getUsagePercentage = () => 0
+  let subscriptionTier = 'free'
+
+  try {
+    const usageData = useUsageLimit()
+    usageCount = usageData.usageCount
+    usageLimit = usageData.usageLimit
+    getUsagePercentage = usageData.getUsagePercentage
+    subscriptionTier = usageData.subscriptionTier
+  } catch (err: any) {
+    console.error('사용량 데이터 로딩 오류:', err)
+    setError('사용량 정보를 불러오는 중 오류가 발생했습니다.')
+  }
 
   const remainingUsage = usageLimit - usageCount
+
+  useEffect(() => {
+    // 사용자 프로필이 로드되면 로딩 상태 해제
+    if (userProfile !== null) {
+      setIsLoading(false)
+    }
+  }, [userProfile])
+
+  // 에러 상태
+  if (error) {
+    return (
+      <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">대시보드 로딩 오류</h2>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <Button onClick={() => window.location.reload()}>
+                페이지 새로고침
+              </Button>
+            </div>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  // 사용자 프로필이 아직 로딩 중인 경우
+  if (isLoading || !userProfile) {
+    return (
+      <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
+              <p className="mt-4 text-gray-600">대시보드를 준비하고 있습니다...</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8">
