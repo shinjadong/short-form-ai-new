@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import NavigationHeader from '@/components/navigation-header'
 import NewLandingPage from '@/components/new-landing-page'
 
-export default function Page() {
+export default function HomePage() {
   const { user, loading } = useAuth()
   const router = useRouter()
 
@@ -17,12 +17,13 @@ export default function Page() {
     }
   }, [user, loading, router])
 
+  // 로딩 중일 때
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">로딩 중...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-white/20 border-t-white mx-auto mb-4"></div>
+          <p className="text-white/80">로딩 중...</p>
         </div>
       </div>
     )
@@ -30,7 +31,7 @@ export default function Page() {
 
   // 로그인하지 않은 사용자에게는 랜딩 페이지 표시
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen">
       <NavigationHeader />
       <NewLandingPage />
     </div>
