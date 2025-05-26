@@ -119,5 +119,7 @@ VERCEL_ACCESS_ISSUE_SOLUTION.md
 VERCEL_TROUBLESHOOTING.md
 *.so
 
+# MCP 서버 (별도 저장소)
+supabase-mcp/
 
 backend/
