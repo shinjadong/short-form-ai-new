@@ -1,12 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { createClientSupabase } from '@/lib/supabase-client'
 
 export default function AuthCallbackContent() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const supabase = createClientSupabase()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<boolean>(false)
@@ -17,18 +16,18 @@ export default function AuthCallbackContent() {
     const handleAuthCallback = async () => {
       try {
         // URL에서 코드와 에러 파라미터 확인
-        const code = searchParams.get('code')
-        const errorParam = searchParams.get('error')
-        const redirectTo = searchParams.get('redirect') || '/'
+        const urlParams = new URLSearchParams(window.location.search)
+        const code = urlParams.get('code')
+        const errorParam = urlParams.get('error')
         
-        console.log('콜백 처리 시작:', { code: !!code, error: errorParam, redirectTo })
+        console.log('콜백 처리 시작:', { code: !!code, error: errorParam })
         setProgress(20)
         
         if (errorParam) {
           console.error('OAuth 에러:', errorParam)
           setError('인증 중 오류가 발생했습니다.')
           setTimeout(() => {
-            window.location.href = `/auth/login?error=oauth_error&redirect=${encodeURIComponent(redirectTo)}`
+            window.location.href = '/auth/login?error=oauth_error'
           }, 2000)
           return
         }
@@ -45,7 +44,7 @@ export default function AuthCallbackContent() {
             console.error('코드 교환 오류:', error)
             setError('인증 처리 중 오류가 발생했습니다.')
             setTimeout(() => {
-              window.location.href = `/auth/login?error=code_exchange_error&redirect=${encodeURIComponent(redirectTo)}`
+              window.location.href = '/auth/login?error=code_exchange_error'
             }, 2000)
             return
           }
@@ -60,18 +59,18 @@ export default function AuthCallbackContent() {
             console.log('세션 확인:', !!sessionCheck.session)
             
             setProgress(90)
-            setStatusMessage('로그인 완료! 페이지로 이동 중...')
+            setStatusMessage('로그인 완료! 대시보드로 이동 중...')
             setSuccess(true)
             
-            // 로그인 성공 - 원래 페이지 또는 메인 페이지로 이동
+            // 로그인 성공 - 무조건 대시보드로 이동
             setTimeout(() => {
-              console.log('페이지로 리다이렉트:', redirectTo)
-              window.location.replace(redirectTo)
+              console.log('대시보드로 리다이렉트')
+              window.location.replace('/')
             }, 1500)
           } else {
             setError('세션 생성에 실패했습니다.')
             setTimeout(() => {
-              window.location.href = `/auth/login?redirect=${encodeURIComponent(redirectTo)}`
+              window.location.href = '/auth/login'
             }, 2000)
           }
         } else {
@@ -86,22 +85,22 @@ export default function AuthCallbackContent() {
             console.error('세션 확인 오류:', error)
             setError('세션 확인 중 오류가 발생했습니다.')
             setTimeout(() => {
-              window.location.href = `/auth/login?error=session_error&redirect=${encodeURIComponent(redirectTo)}`
+              window.location.href = '/auth/login?error=session_error'
             }, 2000)
             return
           }
 
           if (data.session) {
-            console.log('기존 세션 발견, 페이지로 이동')
+            console.log('기존 세션 발견, 대시보드로 이동')
             setProgress(100)
             setSuccess(true)
             setTimeout(() => {
-              window.location.replace(redirectTo)
+              window.location.replace('/')
             }, 1000)
           } else {
             console.log('세션 없음, 로그인으로 이동')
             setTimeout(() => {
-              window.location.href = `/auth/login?redirect=${encodeURIComponent(redirectTo)}`
+              window.location.href = '/auth/login'
             }, 1000)
           }
         }
@@ -115,7 +114,7 @@ export default function AuthCallbackContent() {
     }
 
     handleAuthCallback()
-  }, [router, searchParams, supabase.auth])
+  }, [router, supabase.auth])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -131,14 +130,14 @@ export default function AuthCallbackContent() {
               </div>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">로그인 성공!</h2>
-            <p className="text-gray-600 mb-4">환영합니다! 잠시 후 페이지로 이동합니다.</p>
+            <p className="text-gray-600 mb-4">환영합니다! 대시보드로 이동합니다.</p>
             <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
               <div 
                 className="bg-green-600 h-2 rounded-full transition-all duration-300 ease-out"
                 style={{ width: '100%' }}
               ></div>
             </div>
-            <p className="text-xs text-gray-500">페이지 이동 중...</p>
+            <p className="text-xs text-gray-500">대시보드 이동 중...</p>
           </>
         ) : error ? (
           <>

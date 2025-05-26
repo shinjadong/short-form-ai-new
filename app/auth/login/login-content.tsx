@@ -17,22 +17,14 @@ export default function LoginContent() {
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [error, setError] = useState('')
-  const [redirectTo, setRedirectTo] = useState('/')
 
   const supabase = createClientSupabase()
 
   useEffect(() => {
-    // 이미 로그인된 경우 리다이렉트
+    // 이미 로그인된 경우 대시보드로 이동
     if (user) {
-      const redirect = searchParams.get('redirect') || '/'
-      router.push(redirect)
+      router.push('/')
       return
-    }
-
-    // 리다이렉트 URL 설정
-    const redirectParam = searchParams.get('redirect')
-    if (redirectParam) {
-      setRedirectTo(redirectParam)
     }
 
     // URL 에러 파라미터 처리
@@ -75,7 +67,8 @@ export default function LoginContent() {
           title: '로그인 성공',
           message: '환영합니다!'
         })
-        router.push(redirectTo)
+        // 무조건 대시보드로 이동
+        router.push('/')
       }
     } catch (error) {
       const errorMessage = '로그인 중 오류가 발생했습니다.'
@@ -104,7 +97,8 @@ export default function LoginContent() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`
+          // 무조건 대시보드로 리다이렉트
+          redirectTo: `${window.location.origin}/auth/callback`
         }
       })
 
