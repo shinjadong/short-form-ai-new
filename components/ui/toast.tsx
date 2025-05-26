@@ -117,7 +117,8 @@ type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>
 
 type ToastActionElement = React.ReactElement<typeof ToastAction>
 
-interface Toast {
+// 커스텀 토스트 시스템
+interface CustomToast {
   id: string
   type: 'success' | 'error' | 'info' | 'warning'
   title: string
@@ -125,17 +126,17 @@ interface Toast {
   duration?: number
 }
 
-interface ToastContextType {
-  addToast: (toast: Omit<Toast, 'id'>) => void
+interface CustomToastContextType {
+  addToast: (toast: Omit<CustomToast, 'id'>) => void
   removeToast: (id: string) => void
 }
 
-const ToastContext = createContext<ToastContextType | undefined>(undefined)
+const CustomToastContext = createContext<CustomToastContextType | undefined>(undefined)
 
-export function ToastProvider({ children }: { children: ReactNode }) {
-  const [toasts, setToasts] = useState<Toast[]>([])
+export function CustomToastProvider({ children }: { children: ReactNode }) {
+  const [toasts, setToasts] = useState<CustomToast[]>([])
 
-  const addToast = (toast: Omit<Toast, 'id'>) => {
+  const addToast = (toast: Omit<CustomToast, 'id'>) => {
     const id = Math.random().toString(36).substr(2, 9)
     const newToast = { ...toast, id }
     setToasts(prev => [...prev, newToast])
@@ -151,32 +152,32 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <ToastContext.Provider value={{ addToast, removeToast }}>
+    <CustomToastContext.Provider value={{ addToast, removeToast }}>
       {children}
-      <ToastContainer toasts={toasts} onRemove={removeToast} />
-    </ToastContext.Provider>
+      <CustomToastContainer toasts={toasts} onRemove={removeToast} />
+    </CustomToastContext.Provider>
   )
 }
 
 export function useToast() {
-  const context = useContext(ToastContext)
+  const context = useContext(CustomToastContext)
   if (!context) {
-    throw new Error('useToast must be used within a ToastProvider')
+    throw new Error('useToast must be used within a CustomToastProvider')
   }
   return context
 }
 
-function ToastContainer({ toasts, onRemove }: { toasts: Toast[], onRemove: (id: string) => void }) {
+function CustomToastContainer({ toasts, onRemove }: { toasts: CustomToast[], onRemove: (id: string) => void }) {
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2">
       {toasts.map(toast => (
-        <ToastItem key={toast.id} toast={toast} onRemove={onRemove} />
+        <CustomToastItem key={toast.id} toast={toast} onRemove={onRemove} />
       ))}
     </div>
   )
 }
 
-function ToastItem({ toast, onRemove }: { toast: Toast, onRemove: (id: string) => void }) {
+function CustomToastItem({ toast, onRemove }: { toast: CustomToast, onRemove: (id: string) => void }) {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
