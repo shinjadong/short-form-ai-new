@@ -3,10 +3,6 @@ import OpenAI from 'openai'
 import { createApiSupabase } from '@/lib/supabase-server'
 import { Database } from '@/types/database'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-})
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -68,6 +64,11 @@ export async function POST(request: NextRequest) {
         { status: 429 }
       )
     }
+
+    // OpenAI 클라이언트 초기화
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY
+    })
 
     // OpenAI로 스크립트 생성
     const scriptPrompt = `
@@ -141,7 +142,7 @@ export async function POST(request: NextRequest) {
     })
 
     const keywordsText = keywordsResponse.choices[0]?.message?.content || ''
-    const keywords = keywordsText.split(',').map(k => k.trim()).filter(k => k.length > 0)
+    const keywords = keywordsText.split(',').map((k: string) => k.trim()).filter((k: string) => k.length > 0)
 
     // 비디오 프로젝트 생성
     const projectData: Database['public']['Tables']['video_projects']['Insert'] = {
