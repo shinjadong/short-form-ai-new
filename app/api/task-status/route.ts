@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createApiSupabase } from '@/lib/supabase'
+import { createApiSupabase } from '@/lib/supabase-server'
 import { Database } from '@/types/database'
 
 type VideoTask = Database['public']['Tables']['video_tasks']['Row']
@@ -118,18 +118,7 @@ export async function GET(request: NextRequest) {
           console.error('Backend task status error:', responseText)
           
           // 백엔드가 실패해도 Supabase에서 찾은 정보가 있으면 반환
-          if (task) {
-            return NextResponse.json({
-              success: true,
-              data: {
-                taskId: task.id,
-                status: task.status,
-                progress: task.progress || 0,
-                message: task.current_step || '작업 진행 중...',
-                source: 'supabase'
-              }
-            })
-          }
+          // (이 시점에서는 task가 null이므로 생략)
 
           return NextResponse.json(
             { 
@@ -224,19 +213,8 @@ export async function GET(request: NextRequest) {
       } catch (fetchError) {
         console.error('백엔드 API 호출 오류:', fetchError)
         
-        // 백엔드 연결 실패 시 Supabase에서 찾은 정보가 있으면 반환
-        if (task) {
-          return NextResponse.json({
-            success: true,
-            data: {
-              taskId: task.id,
-              status: task.status,
-              progress: task.progress || 0,
-              message: task.current_step || '백엔드 연결 실패, 캐시된 상태',
-              source: 'supabase_fallback'
-            }
-          })
-        }
+        // 백엔드 연결 실패 시 기본 오류 반환
+        // (task는 이미 null이므로 fallback 불가)
 
         return NextResponse.json(
           { 

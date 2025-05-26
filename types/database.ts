@@ -139,6 +139,7 @@ export interface Database {
           created_at: string
           updated_at: string
           project_id: string
+          user_id?: string
           task_type: 'script_generation' | 'video_generation' | 'voice_synthesis' | 'image_generation'
           status: 'pending' | 'processing' | 'completed' | 'failed'
           progress: number
@@ -146,12 +147,17 @@ export interface Database {
           error_message?: string
           estimated_time?: number
           actual_time?: number
+          current_step?: string
+          steps_completed?: string[]
+          started_at?: string
+          completed_at?: string
         }
         Insert: {
           id?: string
           created_at?: string
           updated_at?: string
           project_id: string
+          user_id?: string
           task_type: 'script_generation' | 'video_generation' | 'voice_synthesis' | 'image_generation'
           status?: 'pending' | 'processing' | 'completed' | 'failed'
           progress?: number
@@ -159,12 +165,17 @@ export interface Database {
           error_message?: string
           estimated_time?: number
           actual_time?: number
+          current_step?: string
+          steps_completed?: string[]
+          started_at?: string
+          completed_at?: string
         }
         Update: {
           id?: string
           created_at?: string
           updated_at?: string
           project_id?: string
+          user_id?: string
           task_type?: 'script_generation' | 'video_generation' | 'voice_synthesis' | 'image_generation'
           status?: 'pending' | 'processing' | 'completed' | 'failed'
           progress?: number
@@ -172,6 +183,10 @@ export interface Database {
           error_message?: string
           estimated_time?: number
           actual_time?: number
+          current_step?: string
+          steps_completed?: string[]
+          started_at?: string
+          completed_at?: string
         }
       }
       generated_videos: {

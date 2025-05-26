@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
-import { createApiSupabase } from '@/lib/supabase'
+import { createApiSupabase } from '@/lib/supabase-server'
 import { Database } from '@/types/database'
 
 const openai = new OpenAI({
@@ -149,10 +149,10 @@ export async function POST(request: NextRequest) {
       title: title || `${subject} - ${new Date().toLocaleDateString()}`,
       subject: subject,
       script: script,
-      keywords: keywords,
       status: 'draft',
       settings: {
         language: language,
+        keywords: keywords,
         generated_at: new Date().toISOString()
       }
     }
