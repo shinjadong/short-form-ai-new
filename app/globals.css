@@ -78,6 +78,11 @@
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
+  }
+  
+  html {
+    scroll-behavior: smooth;
   }
   
   body {
@@ -86,10 +91,8 @@
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-
-  html {
-    scroll-behavior: smooth;
+    margin: 0;
+    padding: 0;
   }
 }
 
@@ -113,48 +116,222 @@
   }
 }
 
-/* 추가 스타일 보장 */
-.bg-gray-50 {
-  background-color: #f9fafb !important;
-}
+/* 중요한 스타일 강제 적용 */
+@layer components {
+  .bg-gray-50 {
+    background-color: #f9fafb;
+  }
 
-.bg-white {
-  background-color: #ffffff !important;
-}
+  .bg-white {
+    background-color: #ffffff;
+  }
 
-.text-gray-900 {
-  color: #111827 !important;
-}
+  .text-gray-900 {
+    color: #111827;
+  }
 
-.text-gray-600 {
-  color: #4b5563 !important;
-}
+  .text-gray-600 {
+    color: #4b5563;
+  }
 
-.border-b {
-  border-bottom-width: 1px !important;
-}
+  .text-gray-800 {
+    color: #1f2937;
+  }
 
-.shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-}
+  .border-b {
+    border-bottom-width: 1px;
+    border-color: #e5e7eb;
+  }
 
-.rounded-lg {
-  border-radius: 0.5rem !important;
-}
+  .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
 
-.p-4 {
-  padding: 1rem !important;
-}
+  .rounded-lg {
+    border-radius: 0.5rem;
+  }
 
-.mb-4 {
-  margin-bottom: 1rem !important;
-}
+  .p-4 {
+    padding: 1rem;
+  }
 
-.text-xl {
-  font-size: 1.25rem !important;
-  line-height: 1.75rem !important;
-}
+  .p-6 {
+    padding: 1.5rem;
+  }
 
-.font-bold {
-  font-weight: 700 !important;
+  .p-8 {
+    padding: 2rem;
+  }
+
+  .mb-4 {
+    margin-bottom: 1rem;
+  }
+
+  .mb-6 {
+    margin-bottom: 1.5rem;
+  }
+
+  .mb-8 {
+    margin-bottom: 2rem;
+  }
+
+  .text-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  .text-2xl {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .text-3xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+
+  .text-4xl {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+
+  .font-bold {
+    font-weight: 700;
+  }
+
+  .font-semibold {
+    font-weight: 600;
+  }
+
+  .min-h-screen {
+    min-height: 100vh;
+  }
+
+  .max-w-7xl {
+    max-width: 80rem;
+  }
+
+  .max-w-4xl {
+    max-width: 56rem;
+  }
+
+  .max-w-md {
+    max-width: 28rem;
+  }
+
+  .mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .flex {
+    display: flex;
+  }
+
+  .grid {
+    display: grid;
+  }
+
+  .items-center {
+    align-items: center;
+  }
+
+  .justify-between {
+    justify-content: space-between;
+  }
+
+  .justify-center {
+    justify-content: center;
+  }
+
+  .space-x-4 > * + * {
+    margin-left: 1rem;
+  }
+
+  .space-y-4 > * + * {
+    margin-top: 1rem;
+  }
+
+  .space-y-6 > * + * {
+    margin-top: 1.5rem;
+  }
+
+  .space-y-8 > * + * {
+    margin-top: 2rem;
+  }
+
+  .sticky {
+    position: sticky;
+  }
+
+  .top-0 {
+    top: 0;
+  }
+
+  .z-50 {
+    z-index: 50;
+  }
+
+  .h-16 {
+    height: 4rem;
+  }
+
+  .px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .py-8 {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .py-12 {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  .gap-6 {
+    gap: 1.5rem;
+  }
+
+  .gap-8 {
+    gap: 2rem;
+  }
+
+  .bg-blue-500 {
+    background-color: #3b82f6;
+  }
+
+  .bg-green-500 {
+    background-color: #10b981;
+  }
+
+  .text-white {
+    color: #ffffff;
+  }
+
+  .bg-gradient-to-r {
+    background-image: linear-gradient(to right, var(--tw-gradient-stops));
+  }
+
+  .from-purple-500 {
+    --tw-gradient-from: #8b5cf6;
+    --tw-gradient-to: rgba(139, 92, 246, 0);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  }
+
+  .to-pink-500 {
+    --tw-gradient-to: #ec4899;
+  }
+
+  .hover\:bg-blue-700:hover {
+    background-color: #1d4ed8;
+  }
+
+  .transition-colors {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
 }

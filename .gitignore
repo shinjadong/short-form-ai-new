@@ -105,6 +105,7 @@ firebase-adminsdk*.json
 backend/config.toml
 *.env
 *.env.*
+00-dev/
 
 # 대용량 파일들
 *.ttc
