@@ -10,6 +10,8 @@ export default function AuthCallbackContent() {
   const supabase = createClientSupabase()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<boolean>(false)
+  const [progress, setProgress] = useState(0)
+  const [statusMessage, setStatusMessage] = useState('Google 인증을 확인하고 있습니다...')
 
   useEffect(() => {
     const handleAuthCallback = async () => {
@@ -17,20 +19,25 @@ export default function AuthCallbackContent() {
         // URL에서 코드와 에러 파라미터 확인
         const code = searchParams.get('code')
         const errorParam = searchParams.get('error')
+        const redirectTo = searchParams.get('redirect') || '/'
         
-        console.log('콜백 처리 시작:', { code: !!code, error: errorParam })
+        console.log('콜백 처리 시작:', { code: !!code, error: errorParam, redirectTo })
+        setProgress(20)
         
         if (errorParam) {
           console.error('OAuth 에러:', errorParam)
           setError('인증 중 오류가 발생했습니다.')
           setTimeout(() => {
-            window.location.href = '/auth/login?error=oauth_error'
+            window.location.href = `/auth/login?error=oauth_error&redirect=${encodeURIComponent(redirectTo)}`
           }, 2000)
           return
         }
 
         if (code) {
+          setStatusMessage('인증 코드를 처리하고 있습니다...')
+          setProgress(40)
           console.log('OAuth 코드 교환 시작...')
+          
           // OAuth 코드를 세션으로 교환
           const { data, error } = await supabase.auth.exchangeCodeForSession(code)
           
@@ -38,33 +45,40 @@ export default function AuthCallbackContent() {
             console.error('코드 교환 오류:', error)
             setError('인증 처리 중 오류가 발생했습니다.')
             setTimeout(() => {
-              window.location.href = '/auth/login?error=code_exchange_error'
+              window.location.href = `/auth/login?error=code_exchange_error&redirect=${encodeURIComponent(redirectTo)}`
             }, 2000)
             return
           }
 
           if (data.session) {
+            setProgress(70)
+            setStatusMessage('사용자 정보를 확인하고 있습니다...')
             console.log('로그인 성공:', data.user?.email)
-            setSuccess(true)
             
             // 세션 확인을 위한 추가 체크
             const { data: sessionCheck } = await supabase.auth.getSession()
             console.log('세션 확인:', !!sessionCheck.session)
             
-            // 로그인 성공 - 직접 새로고침으로 메인 페이지 이동
+            setProgress(90)
+            setStatusMessage('로그인 완료! 페이지로 이동 중...')
+            setSuccess(true)
+            
+            // 로그인 성공 - 원래 페이지 또는 메인 페이지로 이동
             setTimeout(() => {
-              console.log('메인 페이지로 리다이렉트...')
-              // 단순히 메인 페이지로 이동 (replace 사용으로 뒤로가기 방지)
-              window.location.replace('/')
-            }, 2000)
+              console.log('페이지로 리다이렉트:', redirectTo)
+              window.location.replace(redirectTo)
+            }, 1500)
           } else {
             setError('세션 생성에 실패했습니다.')
             setTimeout(() => {
-              window.location.href = '/auth/login'
+              window.location.href = `/auth/login?redirect=${encodeURIComponent(redirectTo)}`
             }, 2000)
           }
         } else {
+          setStatusMessage('기존 세션을 확인하고 있습니다...')
+          setProgress(50)
           console.log('코드 없음, 일반 세션 확인...')
+          
           // 코드가 없으면 일반 세션 확인
           const { data, error } = await supabase.auth.getSession()
           
@@ -72,21 +86,22 @@ export default function AuthCallbackContent() {
             console.error('세션 확인 오류:', error)
             setError('세션 확인 중 오류가 발생했습니다.')
             setTimeout(() => {
-              window.location.href = '/auth/login?error=session_error'
+              window.location.href = `/auth/login?error=session_error&redirect=${encodeURIComponent(redirectTo)}`
             }, 2000)
             return
           }
 
           if (data.session) {
-            console.log('기존 세션 발견, 메인으로 이동')
+            console.log('기존 세션 발견, 페이지로 이동')
+            setProgress(100)
             setSuccess(true)
             setTimeout(() => {
-              window.location.replace('/')
+              window.location.replace(redirectTo)
             }, 1000)
           } else {
             console.log('세션 없음, 로그인으로 이동')
             setTimeout(() => {
-              window.location.href = '/auth/login'
+              window.location.href = `/auth/login?redirect=${encodeURIComponent(redirectTo)}`
             }, 1000)
           }
         }
@@ -104,36 +119,57 @@ export default function AuthCallbackContent() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center">
+      <div className="text-center max-w-md mx-auto px-4">
         {success ? (
           <>
-            <div className="w-32 h-32 mx-auto mb-4 flex items-center justify-center">
-              <svg className="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+            <div className="w-32 h-32 mx-auto mb-6 flex items-center justify-center">
+              <div className="relative">
+                <svg className="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <div className="absolute inset-0 rounded-full border-4 border-green-200 animate-ping"></div>
+              </div>
             </div>
-            <p className="text-lg font-medium text-gray-900 mb-2">로그인 성공!</p>
-            <p className="text-gray-600">대시보드로 이동 중...</p>
-            <div className="mt-4">
-              <div className="animate-pulse bg-blue-200 h-2 rounded-full"></div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">로그인 성공!</h2>
+            <p className="text-gray-600 mb-4">환영합니다! 잠시 후 페이지로 이동합니다.</p>
+            <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+              <div 
+                className="bg-green-600 h-2 rounded-full transition-all duration-300 ease-out"
+                style={{ width: '100%' }}
+              ></div>
             </div>
-            <p className="mt-2 text-xs text-gray-500">곧 대시보드로 이동합니다...</p>
+            <p className="text-xs text-gray-500">페이지 이동 중...</p>
           </>
         ) : error ? (
           <>
-            <div className="w-32 h-32 mx-auto mb-4 flex items-center justify-center">
+            <div className="w-32 h-32 mx-auto mb-6 flex items-center justify-center">
               <svg className="w-16 h-16 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <p className="text-lg font-medium text-gray-900 mb-2">{error}</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">로그인 실패</h2>
+            <p className="text-red-600 mb-4">{error}</p>
             <p className="text-sm text-gray-500">잠시 후 로그인 페이지로 이동합니다.</p>
           </>
         ) : (
           <>
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">인증 처리 중...</p>
-            <p className="mt-2 text-sm text-gray-500">Google 인증을 확인하고 있습니다.</p>
+            <div className="w-32 h-32 mx-auto mb-6 flex items-center justify-center">
+              <div className="relative">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
+                <div className="absolute inset-0 rounded-full border-2 border-blue-200"></div>
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">인증 처리 중</h2>
+            <p className="text-gray-600 mb-6">{statusMessage}</p>
+            
+            {/* 진행률 표시 */}
+            <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+            <p className="text-xs text-gray-500">{progress}% 완료</p>
           </>
         )}
       </div>

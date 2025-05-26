@@ -4,6 +4,7 @@ import * as React from "react"
 import * as ToastPrimitives from "@radix-ui/react-toast"
 import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "lucide-react"
+import { useState, useEffect, createContext, useContext, ReactNode } from 'react'
 
 import { cn } from "@/lib/utils"
 
@@ -115,6 +116,149 @@ ToastDescription.displayName = ToastPrimitives.Description.displayName
 type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>
 
 type ToastActionElement = React.ReactElement<typeof ToastAction>
+
+interface Toast {
+  id: string
+  type: 'success' | 'error' | 'info' | 'warning'
+  title: string
+  message?: string
+  duration?: number
+}
+
+interface ToastContextType {
+  addToast: (toast: Omit<Toast, 'id'>) => void
+  removeToast: (id: string) => void
+}
+
+const ToastContext = createContext<ToastContextType | undefined>(undefined)
+
+export function ToastProvider({ children }: { children: ReactNode }) {
+  const [toasts, setToasts] = useState<Toast[]>([])
+
+  const addToast = (toast: Omit<Toast, 'id'>) => {
+    const id = Math.random().toString(36).substr(2, 9)
+    const newToast = { ...toast, id }
+    setToasts(prev => [...prev, newToast])
+
+    // 자동 제거
+    setTimeout(() => {
+      removeToast(id)
+    }, toast.duration || 5000)
+  }
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id))
+  }
+
+  return (
+    <ToastContext.Provider value={{ addToast, removeToast }}>
+      {children}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+    </ToastContext.Provider>
+  )
+}
+
+export function useToast() {
+  const context = useContext(ToastContext)
+  if (!context) {
+    throw new Error('useToast must be used within a ToastProvider')
+  }
+  return context
+}
+
+function ToastContainer({ toasts, onRemove }: { toasts: Toast[], onRemove: (id: string) => void }) {
+  return (
+    <div className="fixed top-4 right-4 z-50 space-y-2">
+      {toasts.map(toast => (
+        <ToastItem key={toast.id} toast={toast} onRemove={onRemove} />
+      ))}
+    </div>
+  )
+}
+
+function ToastItem({ toast, onRemove }: { toast: Toast, onRemove: (id: string) => void }) {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
+
+  const handleRemove = () => {
+    setIsVisible(false)
+    setTimeout(() => onRemove(toast.id), 300)
+  }
+
+  const getToastStyles = () => {
+    const baseStyles = "transform transition-all duration-300 ease-in-out"
+    const visibleStyles = isVisible ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
+    
+    const typeStyles = {
+      success: "bg-green-50 border-green-200 text-green-800",
+      error: "bg-red-50 border-red-200 text-red-800",
+      warning: "bg-yellow-50 border-yellow-200 text-yellow-800",
+      info: "bg-blue-50 border-blue-200 text-blue-800"
+    }
+
+    return `${baseStyles} ${visibleStyles} ${typeStyles[toast.type]} border rounded-lg shadow-lg p-4 max-w-sm w-full`
+  }
+
+  const getIcon = () => {
+    const iconStyles = "h-5 w-5 flex-shrink-0"
+    
+    switch (toast.type) {
+      case 'success':
+        return (
+          <svg className={`${iconStyles} text-green-400`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        )
+      case 'error':
+        return (
+          <svg className={`${iconStyles} text-red-400`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        )
+      case 'warning':
+        return (
+          <svg className={`${iconStyles} text-yellow-400`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+        )
+      case 'info':
+        return (
+          <svg className={`${iconStyles} text-blue-400`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        )
+    }
+  }
+
+  return (
+    <div className={getToastStyles()}>
+      <div className="flex">
+        <div className="flex-shrink-0">
+          {getIcon()}
+        </div>
+        <div className="ml-3 flex-1">
+          <p className="text-sm font-medium">{toast.title}</p>
+          {toast.message && (
+            <p className="mt-1 text-sm opacity-90">{toast.message}</p>
+          )}
+        </div>
+        <div className="ml-4 flex-shrink-0">
+          <button
+            onClick={handleRemove}
+            className="inline-flex text-gray-400 hover:text-gray-600 focus:outline-none"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export {
   type ToastProps,

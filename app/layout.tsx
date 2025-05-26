@@ -3,6 +3,8 @@ import './globals.css'
 import { ClientProviders } from '@/components/providers/client-providers'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
+import { ToastProvider } from '@/components/ui/toast'
+import { AuthProvider } from '@/components/providers/auth-provider'
 
 export const metadata: Metadata = {
   title: 'Shot Form AI - AI 영상 생성 플랫폼',
@@ -24,10 +26,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ClientProviders>
-            {children}
-            <Toaster />
-          </ClientProviders>
+          <ToastProvider>
+            <AuthProvider>
+              <ClientProviders>
+                {children}
+                <Toaster />
+              </ClientProviders>
+            </AuthProvider>
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>
