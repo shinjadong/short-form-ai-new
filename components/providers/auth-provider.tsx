@@ -60,7 +60,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     )
 
-    return () => subscription.unsubscribe()
+    // localStorage 신호 감지 (OAuth 콜백 후 상태 갱신용)
+    const handleStorageChange = async () => {
+      const refreshNeeded = localStorage.getItem('auth_refresh_needed')
+      if (refreshNeeded === 'true') {
+        console.log('인증 상태 강제 새로고침...')
+        localStorage.removeItem('auth_refresh_needed')
+        
+        // 세션 강제 새로고침
+        const { data: { session } } = await supabase.auth.getSession()
+        setSession(session)
+        setUser(session?.user ?? null)
+        
+        if (session?.user) {
+          await fetchUserProfile(session.user.id)
+        }
+        
+        setLoading(false)
+      }
+    }
+
+    // storage 이벤트 리스너 추가
+    window.addEventListener('storage', handleStorageChange)
+    
+    // 페이지 로드 시에도 체크
+    handleStorageChange()
+
+    return () => {
+      subscription.unsubscribe()
+      window.removeEventListener('storage', handleStorageChange)
+    }
   }, [])
 
   const fetchUserProfile = async (userId: string) => {
