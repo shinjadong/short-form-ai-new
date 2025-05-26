@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/providers/auth-provider'
 import { createClientSupabase } from '@/lib/supabase-client'
 import Link from 'next/link'
-import { useToast } from '@/components/ui/toast'
+import { useToast } from '@/components/providers/toast-provider'
 
 export default function LoginContent() {
   const router = useRouter()
@@ -38,11 +38,7 @@ export default function LoginContent() {
       }
       const errorMessage = errorMessages[errorParam as keyof typeof errorMessages] || '로그인 중 오류가 발생했습니다.'
       setError(errorMessage)
-      addToast({
-        type: 'error',
-        title: '로그인 실패',
-        message: errorMessage
-      })
+      addToast(errorMessage, 'error')
     }
   }, [user, router, addToast])
 
@@ -56,28 +52,16 @@ export default function LoginContent() {
       if (error) {
         const errorMessage = '이메일 또는 비밀번호가 올바르지 않습니다.'
         setError(errorMessage)
-        addToast({
-          type: 'error',
-          title: '로그인 실패',
-          message: errorMessage
-        })
+        addToast(errorMessage, 'error')
       } else {
-        addToast({
-          type: 'success',
-          title: '로그인 성공',
-          message: '환영합니다!'
-        })
+        addToast('환영합니다!', 'success')
         // 무조건 대시보드로 이동
         router.push('/')
       }
     } catch (error) {
       const errorMessage = '로그인 중 오류가 발생했습니다.'
       setError(errorMessage)
-      addToast({
-        type: 'error',
-        title: '로그인 오류',
-        message: errorMessage
-      })
+      addToast(errorMessage, 'error')
     } finally {
       setLoading(false)
     }
@@ -88,11 +72,7 @@ export default function LoginContent() {
     setError('')
 
     try {
-      addToast({
-        type: 'info',
-        title: 'Google 로그인',
-        message: 'Google 인증 페이지로 이동합니다...'
-      })
+      addToast('Google 인증 페이지로 이동합니다...', 'info')
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -105,22 +85,14 @@ export default function LoginContent() {
       if (error) {
         const errorMessage = 'Google 로그인을 시작할 수 없습니다.'
         setError(errorMessage)
-        addToast({
-          type: 'error',
-          title: 'Google 로그인 실패',
-          message: errorMessage
-        })
+        addToast(errorMessage, 'error')
         setGoogleLoading(false)
       }
       // 성공 시 Google로 리다이렉트되므로 로딩 상태 유지
     } catch (error) {
       const errorMessage = 'Google 로그인 중 오류가 발생했습니다.'
       setError(errorMessage)
-      addToast({
-        type: 'error',
-        title: 'Google 로그인 오류',
-        message: errorMessage
-      })
+      addToast(errorMessage, 'error')
       setGoogleLoading(false)
     }
   }

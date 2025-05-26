@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
 import { useAuth } from '@/components/providers/auth-provider'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import NavigationHeader from '@/components/navigation-header'
-import LandingPage from '@/components/landing-page'
+import NewLandingPage from '@/components/new-landing-page'
 
 export default function Page() {
   const { user, loading } = useAuth()
@@ -28,11 +28,11 @@ export default function Page() {
     )
   }
 
-  // 로그인하지 않은 사용자에게만 랜딩 페이지 표시
+  // 로그인하지 않은 사용자에게는 랜딩 페이지 표시
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen flex flex-col">
       <NavigationHeader />
-      <LandingPage />
+      <NewLandingPage />
     </div>
   )
 }
