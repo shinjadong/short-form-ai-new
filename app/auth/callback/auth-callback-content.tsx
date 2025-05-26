@@ -51,14 +51,12 @@ export default function AuthCallbackContent() {
             const { data: sessionCheck } = await supabase.auth.getSession()
             console.log('세션 확인:', !!sessionCheck.session)
             
-            // AuthProvider에게 상태 갱신 신호 보내기
-            localStorage.setItem('auth_refresh_needed', 'true')
-            
-            // 로그인 성공 - 메인 페이지로 이동
+            // 로그인 성공 - 직접 새로고침으로 메인 페이지 이동
             setTimeout(() => {
               console.log('메인 페이지로 리다이렉트...')
-              window.location.href = '/'
-            }, 1500)
+              // 단순히 메인 페이지로 이동 (replace 사용으로 뒤로가기 방지)
+              window.location.replace('/')
+            }, 2000)
           } else {
             setError('세션 생성에 실패했습니다.')
             setTimeout(() => {
@@ -83,7 +81,7 @@ export default function AuthCallbackContent() {
             console.log('기존 세션 발견, 메인으로 이동')
             setSuccess(true)
             setTimeout(() => {
-              window.location.href = '/'
+              window.location.replace('/')
             }, 1000)
           } else {
             console.log('세션 없음, 로그인으로 이동')
@@ -119,7 +117,7 @@ export default function AuthCallbackContent() {
             <div className="mt-4">
               <div className="animate-pulse bg-blue-200 h-2 rounded-full"></div>
             </div>
-            <p className="mt-2 text-xs text-gray-500">잠시만 기다려주세요...</p>
+            <p className="mt-2 text-xs text-gray-500">곧 대시보드로 이동합니다...</p>
           </>
         ) : error ? (
           <>
