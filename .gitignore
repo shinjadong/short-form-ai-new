@@ -91,6 +91,7 @@ jspm_packages/
 !tsconfig.json
 !components.json
 !tailwind.config.json
+!vercel.json
 *.key
 *.pem
 *.p12
