@@ -1,12 +1,21 @@
 'use client'
 
 import { useAuth } from '@/components/providers/auth-provider'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import NavigationHeader from '@/components/navigation-header'
 import LandingPage from '@/components/landing-page'
-import Dashboard from '@/components/dashboard'
 
 export default function Page() {
   const { user, loading } = useAuth()
+  const router = useRouter()
+
+  // 로그인한 사용자는 대시보드로 리다이렉트
+  useEffect(() => {
+    if (!loading && user) {
+      router.push('/dashboard')
+    }
+  }, [user, loading, router])
 
   if (loading) {
     return (
@@ -19,10 +28,11 @@ export default function Page() {
     )
   }
 
+  // 로그인하지 않은 사용자에게만 랜딩 페이지 표시
   return (
     <div className="min-h-screen bg-gray-50">
       <NavigationHeader />
-      {user ? <Dashboard /> : <LandingPage />}
+      <LandingPage />
     </div>
   )
 }

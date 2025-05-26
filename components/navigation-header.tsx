@@ -67,13 +67,13 @@ export default function NavigationHeader() {
             {/* Navigation Links */}
             <nav className="hidden md:flex space-x-6">
               <Link 
-                href="/" 
+                href="/dashboard" 
                 className={`text-sm font-medium transition-colors hover:text-gray-900 ${
-                  isActive('/') ? 'text-gray-900' : 'text-gray-600'
+                  isActive('/dashboard') ? 'text-gray-900' : 'text-gray-600'
                 }`}
               >
                 <Home className="inline h-4 w-4 mr-1" />
-                홈
+                대시보드
               </Link>
               <Link 
                 href="/create" 
@@ -158,9 +158,9 @@ export default function NavigationHeader() {
                 {/* 모바일 네비게이션 */}
                 <div className="md:hidden">
                   <DropdownMenuItem asChild>
-                    <Link href="/" className="cursor-pointer">
+                    <Link href="/dashboard" className="cursor-pointer">
                       <Home className="mr-2 h-4 w-4" />
-                      <span>홈</span>
+                      <span>대시보드</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>

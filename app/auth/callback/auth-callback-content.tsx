@@ -98,7 +98,7 @@ export default function AuthCallbackContent() {
             // 로그인 성공 - 무조건 대시보드로 이동
             setTimeout(() => {
               console.log('대시보드로 리다이렉트')
-              window.location.replace('/')
+              window.location.replace('/dashboard')
             }, 1500)
           } else {
             console.error('세션 생성 실패:', { data })
@@ -129,7 +129,7 @@ export default function AuthCallbackContent() {
             setProgress(100)
             setSuccess(true)
             setTimeout(() => {
-              window.location.replace('/')
+              window.location.replace('/dashboard')
             }, 1000)
           } else {
             console.log('세션 없음, 로그인으로 이동')
