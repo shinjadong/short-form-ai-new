@@ -1,275 +1,225 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
-
 export interface Database {
   public: {
     Tables: {
       users: {
         Row: {
           id: string
-          full_name: string | null
-          avatar_url: string | null
-          billing_address: Json | null
-          payment_method: Json | null
-          email: string | null
-          subscription_tier: string | null
-          usage_limit: number | null
-          usage_count: number | null
-          last_usage_reset: string | null
-          preferences: Json | null
-          created_at: string | null
-          updated_at: string | null
+          created_at: string
+          updated_at: string
+          email: string
+          full_name?: string
+          avatar_url?: string
+          subscription_tier: 'free' | 'pro' | 'premium'
+          usage_limit: number
+          usage_count: number
+          last_login?: string
         }
         Insert: {
           id: string
-          full_name?: string | null
-          avatar_url?: string | null
-          billing_address?: Json | null
-          payment_method?: Json | null
-          email?: string | null
-          subscription_tier?: string | null
-          usage_limit?: number | null
-          usage_count?: number | null
-          last_usage_reset?: string | null
-          preferences?: Json | null
-          created_at?: string | null
-          updated_at?: string | null
+          created_at?: string
+          updated_at?: string
+          email: string
+          full_name?: string
+          avatar_url?: string
+          subscription_tier?: 'free' | 'pro' | 'premium'
+          usage_limit?: number
+          usage_count?: number
+          last_login?: string
         }
         Update: {
           id?: string
-          full_name?: string | null
-          avatar_url?: string | null
-          billing_address?: Json | null
-          payment_method?: Json | null
-          email?: string | null
-          subscription_tier?: string | null
-          usage_limit?: number | null
-          usage_count?: number | null
-          last_usage_reset?: string | null
-          preferences?: Json | null
-          created_at?: string | null
-          updated_at?: string | null
+          created_at?: string
+          updated_at?: string
+          email?: string
+          full_name?: string
+          avatar_url?: string
+          subscription_tier?: 'free' | 'pro' | 'premium'
+          usage_limit?: number
+          usage_count?: number
+          last_login?: string
         }
-        Relationships: []
       }
       video_projects: {
         Row: {
           id: string
+          created_at: string
+          updated_at: string
           user_id: string
           title: string
           subject: string
-          script: string | null
-          keywords: string[] | null
-          status: string | null
-          settings: Json
-          thumbnail_url: string | null
-          created_at: string | null
-          updated_at: string | null
+          script?: string
+          status: 'draft' | 'processing' | 'completed' | 'failed'
+          settings?: any
+          generated_video_url?: string
+          thumbnail_url?: string
+          duration?: number
+          views_count: number
+          is_public: boolean
         }
         Insert: {
           id?: string
+          created_at?: string
+          updated_at?: string
           user_id: string
           title: string
           subject: string
-          script?: string | null
-          keywords?: string[] | null
-          status?: string | null
-          settings?: Json
-          thumbnail_url?: string | null
-          created_at?: string | null
-          updated_at?: string | null
+          script?: string
+          status?: 'draft' | 'processing' | 'completed' | 'failed'
+          settings?: any
+          generated_video_url?: string
+          thumbnail_url?: string
+          duration?: number
+          views_count?: number
+          is_public?: boolean
         }
         Update: {
           id?: string
+          created_at?: string
+          updated_at?: string
           user_id?: string
           title?: string
           subject?: string
-          script?: string | null
-          keywords?: string[] | null
-          status?: string | null
-          settings?: Json
-          thumbnail_url?: string | null
-          created_at?: string | null
-          updated_at?: string | null
+          script?: string
+          status?: 'draft' | 'processing' | 'completed' | 'failed'
+          settings?: any
+          generated_video_url?: string
+          thumbnail_url?: string
+          duration?: number
+          views_count?: number
+          is_public?: boolean
         }
-        Relationships: [
-          {
-            foreignKeyName: "video_projects_user_id_fkey"
-            columns: ["user_id"]
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      video_tasks: {
-        Row: {
-          id: string
-          project_id: string
-          user_id: string
-          task_type: string
-          status: string | null
-          progress: number | null
-          current_step: string | null
-          steps_completed: string[] | null
-          error_message: string | null
-          result_data: Json | null
-          started_at: string | null
-          completed_at: string | null
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          project_id: string
-          user_id: string
-          task_type: string
-          status?: string | null
-          progress?: number | null
-          current_step?: string | null
-          steps_completed?: string[] | null
-          error_message?: string | null
-          result_data?: Json | null
-          started_at?: string | null
-          completed_at?: string | null
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          project_id?: string
-          user_id?: string
-          task_type?: string
-          status?: string | null
-          progress?: number | null
-          current_step?: string | null
-          steps_completed?: string[] | null
-          error_message?: string | null
-          result_data?: Json | null
-          started_at?: string | null
-          completed_at?: string | null
-          created_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "video_tasks_project_id_fkey"
-            columns: ["project_id"]
-            referencedRelation: "video_projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "video_tasks_user_id_fkey"
-            columns: ["user_id"]
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      generated_videos: {
-        Row: {
-          id: string
-          project_id: string
-          user_id: string
-          file_name: string
-          file_url: string
-          file_size: number | null
-          duration: number | null
-          resolution: string | null
-          format: string | null
-          is_public: boolean | null
-          download_count: number | null
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          project_id: string
-          user_id: string
-          file_name: string
-          file_url: string
-          file_size?: number | null
-          duration?: number | null
-          resolution?: string | null
-          format?: string | null
-          is_public?: boolean | null
-          download_count?: number | null
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          project_id?: string
-          user_id?: string
-          file_name?: string
-          file_url?: string
-          file_size?: number | null
-          duration?: number | null
-          resolution?: string | null
-          format?: string | null
-          is_public?: boolean | null
-          download_count?: number | null
-          created_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "generated_videos_project_id_fkey"
-            columns: ["project_id"]
-            referencedRelation: "video_projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "generated_videos_user_id_fkey"
-            columns: ["user_id"]
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
       }
       video_templates: {
         Row: {
           id: string
+          created_at: string
+          updated_at: string
           name: string
-          description: string | null
+          description: string
           category: string
-          settings: Json
-          thumbnail_url: string | null
-          is_featured: boolean | null
-          usage_count: number | null
-          created_by: string | null
-          created_at: string | null
+          template_data: any
+          preview_url?: string
+          thumbnail_url?: string
+          is_featured: boolean
+          usage_count: number
+          is_premium: boolean
         }
         Insert: {
           id?: string
+          created_at?: string
+          updated_at?: string
           name: string
-          description?: string | null
+          description: string
           category: string
-          settings: Json
-          thumbnail_url?: string | null
-          is_featured?: boolean | null
-          usage_count?: number | null
-          created_by?: string | null
-          created_at?: string | null
+          template_data: any
+          preview_url?: string
+          thumbnail_url?: string
+          is_featured?: boolean
+          usage_count?: number
+          is_premium?: boolean
         }
         Update: {
           id?: string
+          created_at?: string
+          updated_at?: string
           name?: string
-          description?: string | null
+          description?: string
           category?: string
-          settings?: Json
-          thumbnail_url?: string | null
-          is_featured?: boolean | null
-          usage_count?: number | null
-          created_by?: string | null
-          created_at?: string | null
+          template_data?: any
+          preview_url?: string
+          thumbnail_url?: string
+          is_featured?: boolean
+          usage_count?: number
+          is_premium?: boolean
         }
-        Relationships: [
-          {
-            foreignKeyName: "video_templates_created_by_fkey"
-            columns: ["created_by"]
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
+      }
+      video_tasks: {
+        Row: {
+          id: string
+          created_at: string
+          updated_at: string
+          project_id: string
+          task_type: 'script_generation' | 'video_generation' | 'voice_synthesis' | 'image_generation'
+          status: 'pending' | 'processing' | 'completed' | 'failed'
+          progress: number
+          result_data?: any
+          error_message?: string
+          estimated_time?: number
+          actual_time?: number
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          project_id: string
+          task_type: 'script_generation' | 'video_generation' | 'voice_synthesis' | 'image_generation'
+          status?: 'pending' | 'processing' | 'completed' | 'failed'
+          progress?: number
+          result_data?: any
+          error_message?: string
+          estimated_time?: number
+          actual_time?: number
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          project_id?: string
+          task_type?: 'script_generation' | 'video_generation' | 'voice_synthesis' | 'image_generation'
+          status?: 'pending' | 'processing' | 'completed' | 'failed'
+          progress?: number
+          result_data?: any
+          error_message?: string
+          estimated_time?: number
+          actual_time?: number
+        }
+      }
+      generated_videos: {
+        Row: {
+          id: string
+          created_at: string
+          updated_at: string
+          project_id: string
+          user_id: string
+          file_name: string
+          file_url: string
+          file_size: number
+          duration?: number
+          resolution?: string
+          format: string
+          is_public: boolean
+          download_count: number
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          project_id: string
+          user_id: string
+          file_name: string
+          file_url: string
+          file_size: number
+          duration?: number
+          resolution?: string
+          format?: string
+          is_public?: boolean
+          download_count?: number
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          project_id?: string
+          user_id?: string
+          file_name?: string
+          file_url?: string
+          file_size?: number
+          duration?: number
+          resolution?: string
+          format?: string
+          is_public?: boolean
+          download_count?: number
+        }
       }
     }
     Views: {
@@ -286,13 +236,10 @@ export interface Database {
         Args: {
           user_uuid: string
         }
-        Returns: undefined
+        Returns: void
       }
     }
     Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
       [_ in never]: never
     }
   }
