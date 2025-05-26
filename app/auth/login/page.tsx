@@ -4,7 +4,7 @@ import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '@/components/providers/auth-provider'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -14,6 +14,11 @@ export default function LoginPage() {
   const supabase = createClientComponentClient()
   const router = useRouter()
   const { user } = useAuth()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     if (user) {
@@ -22,6 +27,8 @@ export default function LoginPage() {
   }, [user, router])
 
   const handleGoogleLogin = async () => {
+    if (!mounted) return
+    
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -42,6 +49,17 @@ export default function LoginPage() {
     }
   }
 
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">로딩 중...</p>
+        </div>
+      </div>
+    )
+  }
+
   if (user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -52,6 +70,8 @@ export default function LoginPage() {
       </div>
     )
   }
+
+  const redirectUrl = mounted ? `${window.location.origin}/auth/callback` : '/auth/callback'
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -78,6 +98,7 @@ export default function LoginPage() {
               onClick={handleGoogleLogin}
               variant="outline"
               className="w-full flex items-center justify-center space-x-2 h-12"
+              disabled={!mounted}
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -143,7 +164,7 @@ export default function LoginPage() {
                   },
                 },
               }}
-              redirectTo={`${window.location.origin}/auth/callback`}
+              redirectTo={redirectUrl}
               providers={[]}
             />
           </CardContent>

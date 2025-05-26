@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
@@ -16,6 +16,11 @@ export default function SignupPage() {
   const supabase = createClientComponentClient()
   const router = useRouter()
   const { user } = useAuth()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     if (user) {
@@ -24,6 +29,8 @@ export default function SignupPage() {
   }, [user, router])
 
   const handleGoogleSignup = async () => {
+    if (!mounted) return
+    
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -44,6 +51,17 @@ export default function SignupPage() {
     }
   }
 
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">로딩 중...</p>
+        </div>
+      </div>
+    )
+  }
+
   if (user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -54,6 +72,8 @@ export default function SignupPage() {
       </div>
     )
   }
+
+  const redirectUrl = mounted ? `${window.location.origin}/auth/callback` : '/auth/callback'
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -143,6 +163,7 @@ export default function SignupPage() {
                   onClick={handleGoogleSignup}
                   variant="outline"
                   className="w-full flex items-center justify-center space-x-2 h-12"
+                  disabled={!mounted}
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path
@@ -209,7 +230,7 @@ export default function SignupPage() {
                       },
                     },
                   }}
-                  redirectTo={`${window.location.origin}/auth/callback`}
+                  redirectTo={redirectUrl}
                   providers={[]}
                 />
               </CardContent>
