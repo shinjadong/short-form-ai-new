@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/providers/auth-provider'
 import { createClientSupabase } from '@/lib/supabase-client'
 import Link from 'next/link'
@@ -9,7 +9,6 @@ import { useToast } from '@/components/ui/toast'
 
 export default function LoginContent() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const { user, signIn } = useAuth()
   const { addToast } = useToast()
   const [email, setEmail] = useState('')
@@ -27,8 +26,9 @@ export default function LoginContent() {
       return
     }
 
-    // URL 에러 파라미터 처리
-    const errorParam = searchParams.get('error')
+    // URL 에러 파라미터 처리 (useSearchParams 대신 직접 파싱)
+    const urlParams = new URLSearchParams(window.location.search)
+    const errorParam = urlParams.get('error')
     if (errorParam) {
       const errorMessages = {
         'oauth_error': 'Google 로그인 중 오류가 발생했습니다.',
@@ -44,7 +44,7 @@ export default function LoginContent() {
         message: errorMessage
       })
     }
-  }, [user, router, searchParams, addToast])
+  }, [user, router, addToast])
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault()
