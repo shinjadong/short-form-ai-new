@@ -1,0 +1,25 @@
+0000000000000000000000000000000000000000 b25134b18996e8d36279313834d36cd0cf14951b Your Name <your-email@example.com> 1748221477 +0900	commit (initial): initial: Shot Form AI - Next.js + Supabase 프론트엔드 완전체
+b25134b18996e8d36279313834d36cd0cf14951b b25134b18996e8d36279313834d36cd0cf14951b Your Name <your-email@example.com> 1748221488 +0900	Branch: renamed refs/heads/master to refs/heads/main
+b25134b18996e8d36279313834d36cd0cf14951b 0b56439d97555b113f43bd7a801031a425390832 Your Name <your-email@example.com> 1748221582 +0900	commit: feat: Vercel 배포 설정 추가 - vercel.json, next.config.mjs
+0b56439d97555b113f43bd7a801031a425390832 853f312d1ce86920cad8f66100f2b74425e4d9cd Your Name <your-email@example.com> 1748223224 +0900	commit: fix: React 18 호환성을 위한 패키지 의존성 수정
+853f312d1ce86920cad8f66100f2b74425e4d9cd b60397b373bc82f1d31418e43f8e00befb2920b0 Your Name <your-email@example.com> 1748223435 +0900	commit: fix: Supabase 클라이언트/서버 분리 및 타입 정의 추가
+b60397b373bc82f1d31418e43f8e00befb2920b0 7e6771e83c53f52974c198995a616041e03f2ba1 Your Name <your-email@example.com> 1748224273 +0900	commit: fix: TypeScript 타입 오류 해결 - 로컬 빌드 성공
+7e6771e83c53f52974c198995a616041e03f2ba1 5a6645ecd3b68f8493687f70eef0119069719d4a Your Name <your-email@example.com> 1748224596 +0900	commit: fix: OpenAI 클라이언트 초기화를 함수 내부로 이동 - 빌드 시점 환경변수 오류 해결
+5a6645ecd3b68f8493687f70eef0119069719d4a 46ef0cde3fbb1049981c5ac2b5b1bfdb70fd8366 Your Name <your-email@example.com> 1748225214 +0900	commit: fix: Supabase 클라이언트를 ClientProviders로 분리하여 프리렌더링 오류 해결
+46ef0cde3fbb1049981c5ac2b5b1bfdb70fd8366 d15125bc90bedc87c7779535d7bb9827c0b38743 Your Name <your-email@example.com> 1748287026 +0900	commit: feat: 완전한 인증 시스템 및 서비스 구조 구현 - Supabase 기반 인증 시스템 (로그인/회원가입/콜백) - 랜딩 페이지/대시보드 분기 구조 - 사용량 제한 시스템 (월 10회 무료) - 비디오 생성/관리 페이지 - 반응형 네비게이션 - Tailwind CSS 스타일링 완전 적용
+d15125bc90bedc87c7779535d7bb9827c0b38743 490c7e2049993f7f10f575e275cdedaa6cdeb033 Your Name <your-email@example.com> 1748287726 +0900	commit: feat: Google OAuth 로그인 구현 및 하이드레이션 오류 수정
+490c7e2049993f7f10f575e275cdedaa6cdeb033 6b0017eedcbf69c1c54509783c10f5ed2971456b Your Name <your-email@example.com> 1748287866 +0900	commit: fix: Vercel 배포 오류 수정 - optimizeCss 제거 및 critters 패키지 추가
+6b0017eedcbf69c1c54509783c10f5ed2971456b 3a1205a4e796a6915f6da805f6b06fbb41d5698b Your Name <your-email@example.com> 1748288047 +0900	commit: fix: SSR window undefined 오류 수정 - mounted 상태로 클라이언트 렌더링 보장
+3a1205a4e796a6915f6da805f6b06fbb41d5698b 80620693a80bb696864a48d8509216e19a4a0960 Your Name <your-email@example.com> 1748290488 +0900	commit: fix: Google OAuth 로그인 플로우 개선 및 AuthProvider 상태 동기화 - OAuth 콜백에서 exchangeCodeForSession() 사용 - localStorage 신호를 통한 상태 동기화 구현 - 메인 페이지에서 자동 새로고침으로 상태 갱신 - 콜백 페이지 UI 개선 및 상세 로깅 추가
+80620693a80bb696864a48d8509216e19a4a0960 12c2df3fc70ec82717d7ea6dadfb9e40e44530e4 Your Name <your-email@example.com> 1748290903 +0900	commit: fix: useSearchParams Suspense boundary 추가로 Next.js 15 호환성 개선
+12c2df3fc70ec82717d7ea6dadfb9e40e44530e4 9f04b0807007c816d54f1e65b96f2122bc3cf38b Your Name <your-email@example.com> 1748291298 +0900	commit: fix: Google OAuth 콜백 후 페이지 전환 로직 단순화
+9f04b0807007c816d54f1e65b96f2122bc3cf38b 9d26cd669c172a7bdf407c631effe17bcd457bfe Your Name <your-email@example.com> 1748291891 +0900	commit: feat: Google 로그인 UX 대폭 개선 - 진행률 표시, 토스트 알림, 자동 리다이렉트 추가
+9d26cd669c172a7bdf407c631effe17bcd457bfe 09623cd5c0ed460e42bbfff4e0f21f489af0a9f3 Your Name <your-email@example.com> 1748292232 +0900	commit: Fix: ToastProvider 중복 선언 오류 해결 - CustomToastProvider로 이름 변경
+09623cd5c0ed460e42bbfff4e0f21f489af0a9f3 bfe802d1be660c10ad8b59e0bb249d60753d2cc8 Your Name <your-email@example.com> 1748292575 +0900	commit: Fix: 로그인 페이지 useSearchParams Suspense boundary 오류 해결
+bfe802d1be660c10ad8b59e0bb249d60753d2cc8 4e70cf3824d0502d5cce7769504b24e7426b81d4 Your Name <your-email@example.com> 1748293016 +0900	commit: Fix: 인증 리다이렉트 로직 단순화 - 무조건 대시보드로 이동
+4e70cf3824d0502d5cce7769504b24e7426b81d4 9ad10284e0c3e71a899eb2bee780f1c0f72ff3f5 Your Name <your-email@example.com> 1748293280 +0900	commit: Fix: useSearchParams 완전 제거로 Next.js 15 Suspense 오류 해결
+9ad10284e0c3e71a899eb2bee780f1c0f72ff3f5 4ac9d8a32309fe3ffe579629d6035a520f51a880 Your Name <your-email@example.com> 1748298016 +0900	commit: Enhanced OAuth callback logging and error handling
+4ac9d8a32309fe3ffe579629d6035a520f51a880 5008903f3e760503394b2a27c5caf64ca8e79b45 Your Name <your-email@example.com> 1748298434 +0900	commit: Fix dashboard loading error - auto create user profile for OAuth users
+5008903f3e760503394b2a27c5caf64ca8e79b45 b545fc0913f423e949cec1c800745ccf35fdaa52 Your Name <your-email@example.com> 1748298879 +0900	commit: Restructure pages: separate landing page and dashboard
+b545fc0913f423e949cec1c800745ccf35fdaa52 e584a439328643400af6a28cdf65b908c1f6350d Your Name <your-email@example.com> 1748301726 +0900	commit: \Complete new landing page redesign for Shot Form AI\
+e584a439328643400af6a28cdf65b908c1f6350d 64d0bf242a0e9283f832467ff9e8b1985e93f8f1 Your Name <your-email@example.com> 1748302106 +0900	commit: \Fix and improve main page.tsx - better loading state and cleaner code\
