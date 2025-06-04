@@ -513,7 +513,7 @@ export function BackendIntegratedWorkflow({
                 <div className="space-y-2">
                   <audio 
                     controls 
-                    src={workflow.voiceGeneration.audioData.audioUrl}
+                    src={workflow.voiceGeneration.audioData.audio_url}
                     className="w-full"
                   />
                   <p className="text-sm text-gray-600">
@@ -622,4 +622,4 @@ export function BackendIntegratedWorkflow({
       )}
     </div>
   )
-} 
+}

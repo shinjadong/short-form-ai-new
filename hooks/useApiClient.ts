@@ -42,7 +42,7 @@ export function useContentArchetypeAnalysis() {
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<ContentArchetypeResponse | null>(null)
 
-  const analyzeContentArchetype = useCallback(async (
+  const analyze = useCallback(async (
     archetype: ContentArchetypeRequest['archetype'],
     scriptSettings: ContentArchetypeRequest['scriptSettings'],
     mode: ContentArchetypeRequest['mode'] = 'advanced',
@@ -82,7 +82,7 @@ export function useContentArchetypeAnalysis() {
     isAnalyzing,
     error,
     result,
-    analyzeContentArchetype
+    analyzeContentArchetype: analyze
   }
 }
 
@@ -95,7 +95,7 @@ export function useVoiceGeneration() {
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<VoiceGenerationResponse | null>(null)
 
-  const generateVoice = useCallback(async (
+  const generate = useCallback(async (
     text: string,
     actorId: string,
     settings: VoiceGenerationRequest['settings']
@@ -133,7 +133,7 @@ export function useVoiceGeneration() {
     isGenerating,
     error,
     result,
-    generateVoice
+    generateVoice: generate
   }
 }
 
@@ -146,7 +146,7 @@ export function useSubtitleGeneration() {
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<SubtitleGenerationResponse | null>(null)
 
-  const generateSubtitle = useCallback(async (
+  const generate = useCallback(async (
     audio: SubtitleGenerationRequest['audio'],
     settings: SubtitleGenerationRequest['settings']
   ): Promise<SubtitleGenerationResponse | null> => {
@@ -182,7 +182,7 @@ export function useSubtitleGeneration() {
     isGenerating,
     error,
     result,
-    generateSubtitle
+    generateSubtitle: generate
   }
 }
 
@@ -195,7 +195,7 @@ export function useSegmentKeywordExtraction() {
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<SegmentKeywordExtractionResponse | null>(null)
 
-  const extractSegmentKeywords = useCallback(async (
+  const extract = useCallback(async (
     script: string,
     audioDuration: number,
     settings: SegmentKeywordExtractionRequest['settings']
@@ -233,7 +233,7 @@ export function useSegmentKeywordExtraction() {
     isExtracting,
     error,
     result,
-    extractSegmentKeywords
+    extractSegmentKeywords: extract
   }
 }
 
@@ -246,7 +246,7 @@ export function useImageSearch() {
   const [error, setError] = useState<string | null>(null)
   const [results, setResults] = useState<ImageSearchResponse[]>([])
 
-  const searchImages = useCallback(async (
+  const search = useCallback(async (
     keyword: string,
     settings: ImageSearchRequest['settings']
   ): Promise<ImageSearchResponse['images'] | null> => {
@@ -265,8 +265,11 @@ export function useImageSearch() {
         1000
       )
 
-      setResults(prev => [...prev, response])
-      return response.images
+      if (response) {
+        setResults(prev => [...prev, response])
+        return response.images
+      }
+      return null
     } catch (err) {
       const errorMessage = isApiError(err) ? err.message : '이미지 검색 중 오류가 발생했습니다.'
       setError(errorMessage)
@@ -286,7 +289,7 @@ export function useImageSearch() {
     isSearching,
     error,
     results,
-    searchImages,
+    searchImages: search,
     clearResults
   }
 }
@@ -300,7 +303,7 @@ export function useVideoSearch() {
   const [error, setError] = useState<string | null>(null)
   const [results, setResults] = useState<VideoSearchResponse[]>([])
 
-  const searchVideos = useCallback(async (
+  const search = useCallback(async (
     keywords: string[],
     settings: VideoSearchRequest['settings']
   ): Promise<VideoSearchResponse['videos'] | null> => {
@@ -319,8 +322,11 @@ export function useVideoSearch() {
         1000
       )
 
-      setResults(prev => [...prev, response])
-      return response.videos
+      if (response) {
+        setResults(prev => [...prev, response])
+        return response.videos
+      }
+      return null
     } catch (err) {
       const errorMessage = isApiError(err) ? err.message : '비디오 검색 중 오류가 발생했습니다.'
       setError(errorMessage)
@@ -340,7 +346,7 @@ export function useVideoSearch() {
     isSearching,
     error,
     results,
-    searchVideos,
+    searchVideos: search,
     clearResults
   }
 }
@@ -356,7 +362,7 @@ export function useFinalVideoComposition() {
   const [currentStep, setCurrentStep] = useState<string>('')
   const [result, setResult] = useState<FinalVideoCompositionResponse | null>(null)
 
-  const composeVideo = useCallback(async (
+  const compose = useCallback(async (
     request: FinalVideoCompositionRequest
   ): Promise<FinalVideoCompositionResponse | null> => {
     setIsComposing(true)
@@ -383,10 +389,15 @@ export function useFinalVideoComposition() {
           setProgress(100)
           setCurrentStep('영상 합성 완료!')
           const finalResponse: FinalVideoCompositionResponse = {
-            ...response,
+            success: response.success,
+            taskId: response.taskId,
             progress: 100,
             videoUrl: finalStatus.videos?.[0],
-            currentStep: '완료'
+            currentStep: '완료',
+            thumbnail: response.thumbnail,
+            duration: response.duration,
+            fileSize: response.fileSize,
+            estimatedTime: response.estimatedTime
           }
           setResult(finalResponse)
           return finalResponse
@@ -412,7 +423,7 @@ export function useFinalVideoComposition() {
     progress,
     currentStep,
     result,
-    composeVideo
+    composeVideo: compose
   }
 }
 
@@ -578,9 +589,10 @@ export function useIntegratedWorkflow() {
       const imageResults: { [segmentId: number]: ImageSearchResponse['images'] } = {}
       for (const segment of keywordResult.segments) {
         if (segment.keywords && segment.keywords.length > 0) {
-          const images = await searchImages(segment.keywords[0], imageSettings)
-          if (images) {
-            imageResults[segment.segment_id] = images
+          const request: ImageSearchRequest = { keyword: segment.keywords[0], settings: imageSettings }
+          const response = await searchImages(request)
+          if (response?.images) {
+            imageResults[segment.segment_id] = response.images
           }
         }
       }
@@ -593,9 +605,10 @@ export function useIntegratedWorkflow() {
       const videoResults: { [segmentId: number]: VideoSearchResponse['videos'] } = {}
       for (const segment of keywordResult.segments) {
         if (segment.keywords && segment.keywords.length > 0) {
-          const videos = await searchVideos(segment.keywords, videoSettings)
-          if (videos) {
-            videoResults[segment.segment_id] = videos
+          const request: VideoSearchRequest = { keywords: segment.keywords, settings: videoSettings }
+          const response = await searchVideos(request)
+          if (response?.videos) {
+            videoResults[segment.segment_id] = response.videos
           }
         }
       }
@@ -645,4 +658,4 @@ export default {
   useFinalVideoComposition,
   useTaskStatus,
   useIntegratedWorkflow
-} 
+}

@@ -413,7 +413,7 @@ export async function apiRequestWithRetry<T>(
   maxRetries: number = 3,
   retryDelay: number = 1000
 ): Promise<T> {
-  let lastError: Error
+  let lastError: Error = new Error('No attempts made')
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
@@ -460,4 +460,4 @@ export default {
   // 유틸리티
   apiRequestWithRetry,
   isApiError
-} 
+}
