@@ -11,7 +11,7 @@ import { CheckCircle, Calendar, CreditCard, ArrowLeft } from 'lucide-react'
 function BillingContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user } = useAuth()
+  const { user, userProfile } = useAuth()
   
   const [responseData, setResponseData] = useState<any>(null)
   const [billingConfirmed, setBillingConfirmed] = useState(false)
@@ -78,7 +78,7 @@ function BillingContent() {
         orderId: 'monthly_' + Date.now(),
         orderName: `Shot Form AI ${plan} 월간 구독`,
         customerEmail: user?.email || 'customer@example.com',
-        customerName: user?.name || '고객',
+        customerName: userProfile?.full_name || user?.email?.split('@')[0] || '고객',
       }
 
       const response = await fetch('/api/billing/payment', {
@@ -275,4 +275,4 @@ export default function BillingPage() {
       <BillingContent />
     </Suspense>
   )
-} 
+}
