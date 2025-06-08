@@ -13,7 +13,8 @@ export async function generateVideoRequest(
   try {
     // 1. Supabase에 프로젝트 저장
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('사용자 인증이 필요합니다')
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!user || !session) throw new Error('사용자 인증이 필요합니다')
 
     // 프로젝트 데이터 준비
     const projectData = {
@@ -57,7 +58,7 @@ export async function generateVideoRequest(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.access_token}`
+        'Authorization': `Bearer ${session.access_token}`
       },
       body: JSON.stringify(backendRequest)
     })

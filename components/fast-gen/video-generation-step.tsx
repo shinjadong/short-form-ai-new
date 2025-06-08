@@ -9,7 +9,7 @@ import {
   Eye, 
   Video 
 } from 'lucide-react'
-import { StepData } from './backup/types'
+import { StepData } from './types'
 
 interface VideoGenerationStepProps {
   stepData: StepData
