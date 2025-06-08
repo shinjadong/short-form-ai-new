@@ -4,9 +4,16 @@ const nextConfig = {
     // Next.js 15 호환성을 위한 설정
   },
   images: {
-    domains: [
-      'via.placeholder.com',
-      'scophizorpxzzvsqjame.supabase.co'
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'scophizorpxzzvsqjame.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
     ],
   },
   // MCP 관련 폴더 제외
