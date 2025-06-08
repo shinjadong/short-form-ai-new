@@ -8,6 +8,7 @@ import { Video, Github, Twitter, Phone, Mail, MapPin } from "lucide-react";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { CustomToastProvider } from "@/components/providers/toast-provider";
+import { LOGO_URLS, getFaviconMetadata, getOpenGraphImages } from "@/lib/constants";
 
 // 폰트 최적화 설정
 const inter = Inter({ 
@@ -29,34 +30,19 @@ export const metadata: Metadata = {
   authors: [{ name: "제이앤유통" }],
   robots: "index, follow",
   manifest: "/manifest.json",
-  icons: {
-    icon: [
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
-    ],
-    shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
-  },
+  icons: getFaviconMetadata(),
   openGraph: {
     title: "Shot Form AI - AI 기반 쇼트폼 비디오 생성",
     description: "AI가 30초 만에 프로급 쇼트폼 비디오를 자동 생성합니다.",
     type: "website",
     locale: "ko_KR",
-    images: [
-      {
-        url: "/logo-400x400.png",
-        width: 400,
-        height: 400,
-        alt: "Shot Form AI 로고",
-      },
-    ],
+    images: getOpenGraphImages(),
   },
   twitter: {
     card: "summary_large_image",
     title: "Shot Form AI - AI 기반 쇼트폼 비디오 생성",
     description: "AI가 30초 만에 프로급 쇼트폼 비디오를 자동 생성합니다.",
-    images: ["/logo-400x400.png"],
+    images: [LOGO_URLS.logo400],
   },
 };
 
@@ -80,7 +66,7 @@ export default function RootLayout({
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 font-bold text-xl">
                         <Image 
-                          src="/logo-small.png" 
+                          src={LOGO_URLS.logoSmall} 
                           alt="Shot Form AI 로고" 
                           width={32} 
                           height={32}
