@@ -2,10 +2,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Step, StepData, TypecastActor } from './types'
 import ScriptGenerationStep from './script-generation-step'
-import VideoSettingsStep from './video-settings-step'
+import VideoSettingsStep from '../video-settings-step'
 import AudioSettingsStep from './audio-settings-step'
-import SubtitleSettingsStep from './subtitle-settings-step'
-import VideoGenerationStep from './video-generation-step'
+import SubtitleSettingsStep from '../subtitle-settings-step'
+import VideoGenerationStep from '../video-generation-step'
 
 interface StepContentProps {
   currentStep: number

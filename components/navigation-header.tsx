@@ -14,6 +14,7 @@ import {
 import { Progress } from '@/components/ui/progress'
 import { LogOut, User, Video, Settings, Plus, Home, Wand2, BarChart3, CreditCard, Crown, Zap } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
@@ -25,12 +26,7 @@ export default function NavigationHeader() {
   const router = useRouter()
 
   const handleSignOut = async () => {
-    try {
-      await signOut()
-      router.push('/')
-    } catch (error) {
-      console.error('로그아웃 오류:', error)
-    }
+    await signOut()
   }
 
   const isActive = (path: string) => pathname === path
@@ -70,19 +66,26 @@ export default function NavigationHeader() {
 
   if (!user) {
     return (
-      <header className="border-b bg-white sticky top-0 z-50">
+      <header className="border-b border-gray-700 sticky top-0 z-50" style={{backgroundColor: '#242221'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link href="/" className="text-xl font-bold text-gray-900">
-                Shot Form AI
+              <Link href="/" className="flex items-center space-x-2">
+                <Image 
+                  src="/logo-small.png" 
+                  alt="Shot Form AI 로고" 
+                  width={40} 
+                  height={40}
+                  className="rounded-lg"
+                />
+                <span className="text-xl font-bold text-white tracking-tight">Shot Form AI</span>
               </Link>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" asChild>
+              <Button variant="ghost" asChild className="text-white hover:text-gray-300 hover:bg-gray-800">
                 <Link href="/auth/login">로그인</Link>
               </Button>
-              <Button asChild>
+              <Button asChild className="bg-white text-black hover:bg-gray-200">
                 <Link href="/auth/signup">회원가입</Link>
               </Button>
             </div>
@@ -93,20 +96,27 @@ export default function NavigationHeader() {
   }
 
   return (
-    <header className="border-b bg-white sticky top-0 z-50">
+    <header className="border-b border-gray-700 sticky top-0 z-50" style={{backgroundColor: '#100e0d'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-8">
-            <Link href="/" className="text-xl font-bold text-gray-900">
-              Shot Form AI
+            <Link href="/" className="flex items-center space-x-2">
+              <Image 
+                src="/logo-small.png" 
+                alt="Shot Form AI 로고" 
+                width={40} 
+                height={40}
+                className="rounded-lg"
+              />
+              <span className="text-xl font-bold text-white tracking-tight">Shot Form AI</span>
             </Link>
             
             {/* Navigation Links */}
             <nav className="hidden md:flex space-x-6">
               <Link 
                 href="/dashboard" 
-                className={`text-sm font-medium transition-colors hover:text-gray-900 ${
-                  isActive('/dashboard') ? 'text-gray-900' : 'text-gray-600'
+                className={`text-sm font-medium tracking-tight transition-colors hover:text-white ${
+                  isActive('/dashboard') ? 'text-white' : 'text-gray-300'
                 }`}
               >
                 <Home className="inline h-4 w-4 mr-1" />
@@ -114,8 +124,8 @@ export default function NavigationHeader() {
               </Link>
               <Link 
                 href="/script-generator" 
-                className={`text-sm font-medium transition-colors hover:text-gray-900 ${
-                  isActive('/script-generator') ? 'text-gray-900' : 'text-gray-600'
+                className={`text-sm font-medium tracking-tight transition-colors hover:text-white ${
+                  isActive('/script-generator') ? 'text-white' : 'text-gray-300'
                 }`}
               >
                 <Wand2 className="inline h-4 w-4 mr-1" />
@@ -123,8 +133,8 @@ export default function NavigationHeader() {
               </Link>
               <Link 
                 href="/create" 
-                className={`text-sm font-medium transition-colors hover:text-gray-900 ${
-                  isActive('/create') ? 'text-gray-900' : 'text-gray-600'
+                className={`text-sm font-medium tracking-tight transition-colors hover:text-white ${
+                  isActive('/create') ? 'text-white' : 'text-gray-300'
                 }`}
               >
                 <Plus className="inline h-4 w-4 mr-1" />
@@ -132,8 +142,8 @@ export default function NavigationHeader() {
               </Link>
               <Link 
                 href="/my-videos" 
-                className={`text-sm font-medium transition-colors hover:text-gray-900 ${
-                  isActive('/my-videos') ? 'text-gray-900' : 'text-gray-600'
+                className={`text-sm font-medium tracking-tight transition-colors hover:text-white ${
+                  isActive('/my-videos') ? 'text-white' : 'text-gray-300'
                 }`}
               >
                 <Video className="inline h-4 w-4 mr-1" />
@@ -144,7 +154,7 @@ export default function NavigationHeader() {
 
           <div className="flex items-center space-x-4">
             {/* Quick Create Button */}
-            <Button size="sm" className="hidden sm:flex" asChild>
+            <Button size="sm" className="hidden sm:flex bg-white text-black hover:bg-gray-200" asChild>
               <Link href="/create">
                 <Plus className="h-4 w-4 mr-1" />
                 생성하기
@@ -153,14 +163,14 @@ export default function NavigationHeader() {
 
             {/* 사용량 표시 */}
             <div className="hidden lg:flex items-center space-x-3">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-gray-300">
                 <span className="font-medium">{usageCount}</span>
                 <span className="text-gray-400">/{usageLimit}</span>
               </div>
               <div className="w-20">
                 <Progress value={getUsagePercentage()} className="h-2" />
               </div>
-              <div className="text-xs text-gray-500 capitalize">
+              <div className="text-xs text-gray-400 capitalize tracking-tight">
                 {subscriptionTier}
               </div>
             </div>
@@ -168,10 +178,10 @@ export default function NavigationHeader() {
             {/* 요금제 링크 */}
             <Link 
               href="/pricing" 
-              className={`text-sm font-medium transition-colors ${
+              className={`text-sm font-medium tracking-tight transition-colors ${
                 isActive('/pricing') 
-                  ? 'text-blue-600' 
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'text-blue-400' 
+                  : 'text-gray-300 hover:text-white'
               }`}
             >
               요금제

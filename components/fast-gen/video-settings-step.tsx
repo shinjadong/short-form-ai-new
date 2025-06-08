@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Video, Upload, X } from 'lucide-react'
-import { StepData } from './types'
+import { StepData } from './backup/types'
 import { useState } from 'react'
 
 interface VideoSettingsStepProps {

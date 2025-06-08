@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import Image from "next/image";
 import { Video, Github, Twitter, Phone, Mail, MapPin } from "lucide-react";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { Toaster } from "@/components/ui/toaster";
@@ -27,11 +28,35 @@ export const metadata: Metadata = {
   keywords: "AI 비디오, 쇼트폼, 비디오 생성, 자동 편집, TypeCast, AI 스크립트",
   authors: [{ name: "제이앤유통" }],
   robots: "index, follow",
+  manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     title: "Shot Form AI - AI 기반 쇼트폼 비디오 생성",
     description: "AI가 30초 만에 프로급 쇼트폼 비디오를 자동 생성합니다.",
     type: "website",
     locale: "ko_KR",
+    images: [
+      {
+        url: "/logo-400x400.png",
+        width: 400,
+        height: 400,
+        alt: "Shot Form AI 로고",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Shot Form AI - AI 기반 쇼트폼 비디오 생성",
+    description: "AI가 30초 만에 프로급 쇼트폼 비디오를 자동 생성합니다.",
+    images: ["/logo-400x400.png"],
   },
 };
 
@@ -54,7 +79,13 @@ export default function RootLayout({
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 font-bold text-xl">
-                        <Video className="h-5 w-5 text-primary" />
+                        <Image 
+                          src="/logo-small.png" 
+                          alt="Shot Form AI 로고" 
+                          width={32} 
+                          height={32}
+                          className="rounded-lg"
+                        />
                         <span className="text-primary">Shot Form AI</span>
                       </div>
                       <p className="text-sm text-slate-700">

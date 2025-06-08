@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { createClientSupabase } from '@/lib/supabase-client'
 import type { Database } from '@/types/database'
+import { useRouter } from 'next/navigation'
 
 type UserProfile = Database['public']['Tables']['users']['Row']
 
@@ -25,6 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
   
   const supabase = createClientSupabase()
 
@@ -51,7 +53,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(session?.user ?? null)
         
         if (session?.user) {
-          await fetchUserProfile(session.user.id)
+          if (event === 'SIGNED_IN') {
+            await fetchUserProfile(session.user.id)
+          }
         } else {
           setUserProfile(null)
         }
@@ -63,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe()
     }
-  }, [])
+  }, [supabase.auth])
 
   const fetchUserProfile = async (userId: string) => {
     try {
@@ -154,16 +158,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    if (error) {
+    try {
+      const response = await fetch('/api/auth/logout', { method: 'POST' })
+      if (!response.ok) {
+        throw new Error('Logout failed')
+      }
+    } catch (error) {
       console.error('로그아웃 오류:', error)
-      throw error
+      // 실패하더라도 클라이언트 상태는 초기화 시도
+    } finally {
+      // 모든 상태 초기화
+      setUser(null)
+      setSession(null)
+      setUserProfile(null)
+      // 홈으로 리디렉션하고 서버 상태 갱신
+      router.push('/')
+      router.refresh()
     }
-    
-    // 모든 상태 초기화
-    setUser(null)
-    setSession(null)
-    setUserProfile(null)
   }
 
   const updateProfile = async (updates: Partial<UserProfile>) => {

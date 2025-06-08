@@ -320,47 +320,53 @@ export async function GET() {
     if (!response.ok) {
       console.error('TypeCast actors API 오류:', response.status)
       
-      // schema.py의 TypeCastActorsResponse 구조에 맞춘 기본 응답
+      // voice.py의 get_typecast_voices와 유사한 기본 응답
+      // API 키가 없거나 API 호출 실패 시 기본 음성 목록 반환
+      const defaultActors = [
+        { id: "603fa172a669dfd23f450abd", name: "김서연", language: "ko", gender: "female", age: "adult", description: "기본 여성 음성 1" },
+        { id: "603fa172a669dfd23f450abe", name: "이준호", language: "ko", gender: "male", age: "adult", description: "기본 남성 음성 1" },
+        { id: "603fa172a669dfd23f450abf", name: "박지민", language: "ko", gender: "female", age: "adult", description: "기본 여성 음성 2" },
+        { id: "603fa172a669dfd23f450ac0", name: "최민수", language: "ko", gender: "male", age: "adult", description: "기본 남성 음성 2" },
+        { id: "603fa172a669dfd23f450ac1", name: "한예슬", language: "ko", gender: "female", age: "adult", description: "기본 여성 음성 3" },
+        { id: "603fa172a669dfd23f450ac2", name: "강태우", language: "ko", gender: "male", age: "adult", description: "기본 남성 음성 3" }
+      ];
+      console.warn('TypeCast API 호출 실패 또는 API 토큰 없음. 기본 액터 목록을 반환합니다.');
       return NextResponse.json({
-        status: 200,
+        status: 200, // 성공으로 간주하고 기본 목록 제공
         message: "기본 TypeCast 액터 목록입니다.",
         data: {
-          actors: [
-            {
-              id: "603fa172a669dfd23f450abd",
-              name: "김서연",
-              language: "ko",
-              gender: "female",
-              age: "adult",
-              description: "친근하고 자연스러운 한국어 여성 목소리"
-            },
-            {
-              id: "603fa172a669dfd23f450abe", 
-              name: "이준호",
-              language: "ko",
-              gender: "male",
-              age: "adult",
-              description: "신뢰감 있는 한국어 남성 목소리"
-            }
-          ]
+          actors: defaultActors
         }
-      })
+      });
     }
 
-    const result = await response.json()
+    const result = await response.json();
     
-    // schema.py의 TypeCastActorData 구조에 맞춘 파싱
     if (result.result && Array.isArray(result.result)) {
       const actors = result.result.map((actor: any) => ({
         id: actor.actor_id,
         name: actor.name?.ko || actor.name?.en || `액터 ${actor.actor_id}`,
-        language: actor.language || 'ko',
-        gender: actor.gender || 'unknown',
-        age: actor.age || 'adult',
-        description: actor.description || ''
-      }))
+        language: actor.language || 'ko', // TypeCast는 주로 한국어지만, API 응답에 따라 다를 수 있음
+        gender: actor.gender?.toLowerCase() || 'unknown',
+        age: actor.age || 'adult', // API 응답에 따라 'child', 'teen' 등 가능
+        description: actor.description || actor.bio?.ko || actor.bio?.en || '' // 상세 설명 추가
+      }));
 
-      console.log(`TypeCast API에서 ${actors.length}개의 음성을 가져왔습니다.`)
+      console.log(`TypeCast API에서 ${actors.length}개의 음성을 가져왔습니다.`);
+
+      if (actors.length === 0) {
+        // API는 성공했으나 반환된 액터가 없는 경우
+        console.warn("TypeCast API에서 음성 목록을 가져왔으나 비어있습니다. 기본 목록을 사용합니다.");
+        const defaultActorsOnEmpty = [
+            { id: "603fa172a669dfd23f450abd", name: "김서연", language: "ko", gender: "female", age: "adult", description: "기본 여성 음성 1" },
+            { id: "603fa172a669dfd23f450abe", name: "이준호", language: "ko", gender: "male", age: "adult", description: "기본 남성 음성 1" },
+        ];
+        return NextResponse.json({
+            status: 200,
+            message: "TypeCast API에서 음성을 가져오지 못해 기본 목록을 반환합니다.",
+            data: { actors: defaultActorsOnEmpty }
+        });
+      }
 
       return NextResponse.json({
         status: 200,
@@ -368,21 +374,35 @@ export async function GET() {
         data: {
           actors: actors
         }
-      })
+      });
     } else {
+      // API 응답 형식이 예상과 다른 경우
+      console.error("TypeCast 액터 목록 형식이 올바르지 않습니다. 기본 목록을 사용합니다.");
+      const defaultActorsOnFormatError = [
+        { id: "603fa172a669dfd23f450abd", name: "김서연", language: "ko", gender: "female", age: "adult", description: "기본 여성 음성 1" },
+        { id: "603fa172a669dfd23f450abe", name: "이준호", language: "ko", gender: "male", age: "adult", description: "기본 남성 음성 1" },
+      ];
       return NextResponse.json({
-        status: 500,
-        message: "TypeCast 액터 목록 형식이 올바르지 않습니다.",
-        data: null
-      }, { status: 500 })
+        status: 200, // 오류 대신 기본 목록 제공
+        message: "TypeCast 액터 목록 형식이 올바르지 않아 기본 목록을 반환합니다.",
+        data: { actors: defaultActorsOnFormatError }
+      });
     }
 
   } catch (error) {
-    console.error('TypeCast 액터 목록 조회 오류:', error)
+    console.error('TypeCast 액터 목록 조회 오류:', error);
+    const defaultActorsOnError = [
+        { id: "603fa172a669dfd23f450abd", name: "김서연", language: "ko", gender: "female", age: "adult", description: "기본 여성 음성 1" },
+        { id: "603fa172a669dfd23f450abe", name: "이준호", language: "ko", gender: "male", age: "adult", description: "기본 남성 음성 1" },
+        { id: "603fa172a669dfd23f450abf", name: "박지민", language: "ko", gender: "female", age: "adult", description: "기본 여성 음성 2" },
+        { id: "603fa172a669dfd23f450ac0", name: "최민수", language: "ko", gender: "male", age: "adult", description: "기본 남성 음성 2" },
+        { id: "603fa172a669dfd23f450ac1", name: "한예슬", language: "ko", gender: "female", age: "adult", description: "기본 여성 음성 3" },
+        { id: "603fa172a669dfd23f450ac2", name: "강태우", language: "ko", gender: "male", age: "adult", description: "기본 남성 음성 3" }
+    ];
     return NextResponse.json({
-      status: 500,
-      message: error instanceof Error ? error.message : 'TypeCast 액터 목록 조회 중 오류가 발생했습니다.',
-      data: null
-    }, { status: 500 })
+      status: 200, // 오류 대신 기본 목록 제공
+      message: error instanceof Error ? error.message : 'TypeCast 액터 목록 조회 중 오류가 발생하여 기본 목록을 반환합니다.',
+      data: { actors: defaultActorsOnError }
+    });
   }
 }

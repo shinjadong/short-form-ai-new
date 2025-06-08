@@ -193,77 +193,31 @@ export function useVoiceGeneration() {
         return result.data
       }
 
-      // TypeCast 실패 시 Azure TTS로 fallback
-      if (result.status >= 500 || result.status === 503) {
-        console.log('TypeCast 실패, Azure TTS로 fallback 시도...')
-        return await tryAzureFallback(text, options)
-      }
-
-      throw new Error(result.message || 'TypeCast 음성 생성 실패')
+      // TypeCast 실패 시 에러 발생 (fallback 없음)
+      const errorMessage = result.message || 'TypeCast 음성 생성 실패'
+      setError(errorMessage)
+      throw new Error(errorMessage)
 
     } catch (error) {
       console.error('TypeCast 음성 생성 오류:', error)
       
-      // 재시도 로직
-      if (retryCount < 2) {
+      // 재시도 로직 (최대 3회)
+      if (retryCount < 3) {
         setRetryCount(prev => prev + 1)
         console.log(`TypeCast 재시도 ${retryCount + 1}/3`)
         await new Promise(resolve => setTimeout(resolve, 1000))
         return generateVoice(text, actorId, options)
       }
 
-      // 최대 재시도 후 Azure fallback
-      console.log('TypeCast 최대 재시도 초과, Azure TTS로 fallback...')
-      return await tryAzureFallback(text, options)
+      // 최대 재시도 후에도 실패하면 에러 발생
+      const errorMessage = error instanceof Error ? error.message : 'TypeCast 음성 생성 실패'
+      setError(errorMessage)
+      throw new Error(errorMessage)
     } finally {
       setIsGenerating(false)
     }
   }, [retryCount])
 
-  const tryAzureFallback = async (text: string, options?: {
-    lang?: string
-    tempo?: number
-    volume?: number
-    audio_format?: 'wav' | 'mp3'
-  }) => {
-    try {
-      const azureResponse = await fetch('/api/generate-azure-voice', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text,
-          voice_name: 'ko-KR-SunHiNeural-Female',
-          voice_rate: options?.tempo || 1.0,
-          voice_volume: (options?.volume || 100) / 100,
-          audio_format: options?.audio_format || 'wav'
-        }),
-      })
-
-      const azureResult = await azureResponse.json()
-
-      // schema.py BaseResponse 구조에 맞춘 응답 처리
-      if (azureResult.status === 200 && azureResult.data) {
-        console.log('Azure TTS 음성 생성 성공')
-        const audioData = {
-          audio_url: azureResult.data.audio_url,
-          duration: azureResult.data.duration,
-          format: azureResult.data.format,
-          actor_id: 'azure-tts'
-        }
-        setAudioData(audioData)
-        return audioData
-      }
-
-      throw new Error(azureResult.message || 'Azure TTS 음성 생성 실패')
-
-    } catch (azureError) {
-      console.error('Azure TTS 음성 생성 오류:', azureError)
-      setError('음성 생성에 실패했습니다. 다시 시도해주세요.')
-      throw azureError
-    }
-  }
 
   const resetAudio = useCallback(() => {
     setAudioData(null)
@@ -1237,4 +1191,4 @@ export function useContentArchetypeAnalysis() {
     analyzeContentArchetype,
     resetAnalysis
   }
-} 
+}
